@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}化学实验助手{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="nav-brand">化学实验助手</a>
+        <span class="nav-sub">实验报告辅助工具</span>
+    </nav>
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+    <div id="toast" class="toast hidden"></div>
+    <script src="/static/js/main.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

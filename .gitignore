@@ -1,0 +1,20 @@
+# API key config - DO NOT commit
+config.json
+
+# Experiment data (user's private data)
+data/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}实验列表 - 化学实验助手{% endblock %}
+
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+    <h1>我的实验</h1>
+    <button class="btn btn-primary" onclick="showCreateModal()">+ 新建实验</button>
+</div>
+
+<div id="experiment-list">
+    <p style="color:var(--gray-500)">加载中...</p>
+</div>
+
+<div id="create-modal" class="modal-overlay hidden">
+    <div class="modal">
+        <h2>新建实验</h2>
+        <div class="form-group">
+            <label>实验标题</label>
+            <input type="text" id="new-title" placeholder="例如：乙酸乙酯的制备">
+        </div>
+        <div class="form-group">
+            <label>实验目的</label>
+            <textarea id="new-objective" rows="3" placeholder="描述本次实验的目标和原理..."></textarea>
+        </div>
+        <div class="form-group">
+            <label>参考文献</label>
+            <textarea id="new-references" rows="3" placeholder="粘贴实验教材内容、文献链接或上传文件..."></textarea>
+        </div>
+        <div class="form-group">
+            <label>DeepSeek API Key（如未配置）</label>
+            <input type="password" id="new-apikey" placeholder="sk-...">
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;">
+            <button class="btn btn-outline" onclick="hideCreateModal()">取消</button>
+            <button class="btn btn-primary" id="btn-create" onclick="createExperiment()">创建并生成步骤</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/home.js"></script>
+{% endblock %}

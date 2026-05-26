@@ -1,0 +1,7 @@
+{
+  "deepseek_api_key": "sk-你的密钥",
+  "deepseek_base_url": "https://api.deepseek.com",
+  "deepseek_model": "deepseek-chat",
+  "host": "127.0.0.1",
+  "port": 5000
+}

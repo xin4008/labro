@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{{ experiment.title }} - 化学实验助手{% endblock %}
+
+{% block content %}
+<div class="workspace">
+    <aside class="step-list card" id="step-list">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <strong>实验步骤</strong>
+            <button class="btn btn-outline btn-sm" onclick="exportWord()">导出Word</button>
+        </div>
+        <div id="steps-container">
+            <p style="color:var(--gray-500)">加载中...</p>
+        </div>
+        <div style="margin-top:8px;">
+            <button class="btn btn-outline btn-sm" onclick="addStep()">+ 添加步骤</button>
+        </div>
+    </aside>
+
+    <section class="step-detail card" id="step-detail">
+        <p style="color:var(--gray-500);text-align:center;padding:40px;">请从左侧选择一个步骤</p>
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+var EXPERIMENT_ID = "{{ experiment.id }}";
+</script>
+<script src="/static/js/workspace.js"></script>
+{% endblock %}
