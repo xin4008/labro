@@ -1,20 +1,39 @@
-# API key config - DO NOT commit
+# Secrets — never commit
 config.json
+backend/config.yaml
+.env
+.env.*
 
-# Experiment data (user's private data)
+# User data
 data/
+backend/data/
 
 # Python
 __pycache__/
 *.pyc
 *.pyo
+*.py[cod]
+.Python
 venv/
-.env
+.venv/
+backend/.venv/
+*.egg-info/
+dist/
+build/
 
-# IDE
+# Node / frontend
+frontend/node_modules/
+frontend/dist/
+
+# IDE / OS
 .vscode/
 .idea/
-
-# OS
+*.swp
 .DS_Store
 Thumbs.db
+desktop.ini
+
+# Logs & temp
+*.log
+*.tmp
+.cache/
