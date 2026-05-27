@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom'
 export function HomePage() {
   return (
     <div className="mx-auto max-w-2xl rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-      <h3 className="text-xl font-semibold text-slate-900">开始你的实验</h3>
+      <h3 className="text-xl font-semibold text-slate-900">开始你的实验记录</h3>
       <p className="mt-2 text-sm leading-relaxed text-slate-600">
-        支持文献 AI 解析、按步骤记录数据，并可一键导出 Word 实验报告。
-        下一步（Phase 5）将完善响应式与离线体验。
+        支持<strong>化学</strong>、<strong>物理</strong>与<strong>生物</strong>实验：文献/图片
+        AI 解析、分步数据记录、Word 报告导出。新建实验时选择学科即可匹配对应模板与 AI 提示。
       </p>
       <ul className="mt-6 space-y-2 text-sm text-slate-700">
         <li className="flex gap-2">

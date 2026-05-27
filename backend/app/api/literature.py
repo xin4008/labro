@@ -32,18 +32,7 @@ def _experiment_with_docs(db: Session, experiment_id: str) -> Experiment:
 @router.get("/{experiment_id}/documents", response_model=list[DocumentRead])
 def list_documents(experiment_id: str, db: Session = Depends(get_db)) -> list[DocumentRead]:
     exp = _experiment_with_docs(db, experiment_id)
-    return [
-        DocumentRead(
-            id=d.id,
-            filename=d.filename,
-            doc_type=d.doc_type.value,
-            is_handout=d.is_handout,
-            source_url=d.source_url,
-            created_at=d.created_at,
-            has_text=bool(d.parsed_text),
-        )
-        for d in exp.documents
-    ]
+    return [literature_service.build_document_read(d, experiment_id) for d in exp.documents]
 
 
 @router.post("/{experiment_id}/documents/upload", response_model=list[DocumentRead])
@@ -59,18 +48,7 @@ async def upload_document(
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     exp = _experiment_with_docs(db, experiment_id)
-    return [
-        DocumentRead(
-            id=d.id,
-            filename=d.filename,
-            doc_type=d.doc_type.value,
-            is_handout=d.is_handout,
-            source_url=d.source_url,
-            created_at=d.created_at,
-            has_text=bool(d.parsed_text),
-        )
-        for d in exp.documents
-    ]
+    return [literature_service.build_document_read(d, experiment_id) for d in exp.documents]
 
 
 @router.post("/{experiment_id}/documents/url", response_model=list[DocumentRead])
@@ -95,18 +73,7 @@ async def add_url(
         raise HTTPException(status_code=400, detail=detail) from exc
 
     exp = _experiment_with_docs(db, experiment_id)
-    return [
-        DocumentRead(
-            id=d.id,
-            filename=d.filename,
-            doc_type=d.doc_type.value,
-            is_handout=d.is_handout,
-            source_url=d.source_url,
-            created_at=d.created_at,
-            has_text=bool(d.parsed_text),
-        )
-        for d in exp.documents
-    ]
+    return [literature_service.build_document_read(d, experiment_id) for d in exp.documents]
 
 
 @router.delete("/{experiment_id}/documents/{document_id}")

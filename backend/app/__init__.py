@@ -1,1 +1,1 @@
-"""Chemistry Lab Assistant — FastAPI backend."""
+"""Labro — FastAPI backend."""

@@ -1,4 +1,5 @@
 import type {
+  Discipline,
   ExperimentDetail,
   ExperimentListItem,
   ExperimentStatus,
@@ -47,13 +48,20 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 export const api = {
   health: () => request<{ status: string; phase: string }>('/health'),
 
-  listTemplates: () => request<ExperimentTemplate[]>('/templates'),
+  listTemplates: (discipline?: Discipline) =>
+    request<ExperimentTemplate[]>(
+      discipline ? `/templates?discipline=${discipline}` : '/templates'
+    ),
 
   listExperiments: () => request<ExperimentListItem[]>('/experiments'),
 
   getExperiment: (id: string) => request<ExperimentDetail>(`/experiments/${id}`),
 
-  createExperiment: (data: { title: string; template_id?: number | null }) =>
+  createExperiment: (data: {
+    title: string
+    discipline?: Discipline
+    template_id?: number | null
+  }) =>
     request<ExperimentDetail>('/experiments', {
       method: 'POST',
       body: JSON.stringify(data),

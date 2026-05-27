@@ -10,7 +10,7 @@ export function TopBar({ title, onExport, exportDisabled, exportLabel }: TopBarP
     <header className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur md:px-6">
       <div className="min-w-0 flex-1">
         <h2 className="truncate text-lg font-semibold text-slate-900">
-          {title ?? '欢迎使用化学实验助手'}
+          {title ?? '欢迎使用 Labro'}
         </h2>
         <p className="text-xs text-slate-500 md:text-sm">
           {title

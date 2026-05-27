@@ -1,3 +1,5 @@
+export type Discipline = 'chemistry' | 'physics' | 'biology'
+
 export type ExperimentStatus = 'draft' | 'in_progress' | 'completed'
 
 export interface TemplateField {
@@ -9,6 +11,7 @@ export interface TemplateField {
 export interface ExperimentTemplate {
   id: number
   name: string
+  discipline: Discipline
   fields: TemplateField[]
   created_at: string
 }
@@ -16,16 +19,18 @@ export interface ExperimentTemplate {
 export interface UploadedDocument {
   id: number
   filename: string
-  doc_type: 'pdf' | 'docx' | 'url'
+  doc_type: 'pdf' | 'docx' | 'url' | 'image'
   is_handout: boolean
   source_url: string | null
   created_at: string
   has_text: boolean
+  preview_url: string | null
 }
 
 export interface ExperimentListItem {
   id: string
   title: string
+  discipline: Discipline
   status: ExperimentStatus
   template_id: number | null
   current_step_index: number
@@ -63,6 +68,7 @@ export interface ExperimentStep {
 export interface ExperimentDetail {
   id: string
   title: string
+  discipline: Discipline
   status: ExperimentStatus
   template_id: number | null
   purpose: string | null

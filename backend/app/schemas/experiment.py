@@ -3,17 +3,20 @@ from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.models.discipline import Discipline
 from app.models.experiment import ExperimentStatus, FieldType
 from app.schemas.literature import DocumentRead
 
 
 class ExperimentCreate(BaseModel):
     title: str = Field(min_length=1, max_length=256)
+    discipline: Discipline = Discipline.CHEMISTRY
     template_id: Optional[int] = None
 
 
 class ExperimentUpdate(BaseModel):
     title: Optional[str] = Field(default=None, min_length=1, max_length=256)
+    discipline: Optional[Discipline] = None
     status: Optional[ExperimentStatus] = None
     template_id: Optional[int] = None
     purpose: Optional[str] = None
@@ -56,6 +59,7 @@ class ExperimentListItem(BaseModel):
 
     id: str
     title: str
+    discipline: Discipline
     status: ExperimentStatus
     template_id: Optional[int]
     current_step_index: int
@@ -70,6 +74,7 @@ class ExperimentDetail(BaseModel):
 
     id: str
     title: str
+    discipline: Discipline
     status: ExperimentStatus
     template_id: Optional[int]
     purpose: Optional[str]

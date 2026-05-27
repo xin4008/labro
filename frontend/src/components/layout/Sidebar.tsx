@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import { api } from '@/api/client'
+import { DISCIPLINE_LABEL } from '@/constants/discipline'
 import type { ExperimentListItem } from '@/types'
 
 const statusLabel: Record<string, string> = {
@@ -43,8 +44,8 @@ export function Sidebar() {
             Cl
           </div>
           <div>
-            <h1 className="text-sm font-semibold text-slate-900">化学实验助手</h1>
-            <p className="text-xs text-slate-500">Lab Assistant MVP</p>
+            <h1 className="text-sm font-semibold text-slate-900">Labro</h1>
+            <p className="text-xs text-slate-500">化学 · 物理 · 生物</p>
           </div>
         </div>
         <button
@@ -87,6 +88,10 @@ export function Sidebar() {
                 >
                   <p className="truncate text-sm font-medium">{exp.title}</p>
                   <p className="mt-0.5 text-xs text-slate-500">
+                    <span className="text-brand-600">
+                      {DISCIPLINE_LABEL[exp.discipline] ?? '化学'}
+                    </span>
+                    {' · '}
                     {statusLabel[exp.status] ?? exp.status}
                     {exp.step_count > 0 && ` · ${exp.completed_step_count}/${exp.step_count} 步`}
                   </p>

@@ -17,6 +17,11 @@ class StubAIProvider(AIProvider):
             "未配置 DeepSeek API 密钥。请在 backend/config.yaml 的 ai.api_key 中填写。"
         )
 
+    async def refine_image_ocr_text(self, ocr_text: str, discipline=None, filename: str = "image") -> str:
+        raise RuntimeError(
+            "未配置 DeepSeek API 密钥。请在 backend/config.yaml 的 ai.api_key 中填写。"
+        )
+
 
 def get_ai_provider(settings: AppSettings | None = None) -> AIProvider:
     """统一返回 DeepSeek 提供商（仅此一家）。"""

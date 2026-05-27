@@ -6,6 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from app.database import get_db
+from app.models.discipline import Discipline
 from app.models.experiment import Experiment, ExperimentStatus, ExperimentStep
 from app.models.template import ExperimentTemplate
 from app.schemas.experiment import (
@@ -15,24 +16,14 @@ from app.schemas.experiment import (
     ExperimentUpdate,
 )
 from app.schemas.literature import DocumentRead
+from app.services import literature as literature_service
 from app.services.export_docx import export_experiment_to_docx
 
 router = APIRouter(prefix="/experiments", tags=["experiments"])
 
 
 def _to_document_reads(exp: Experiment) -> list[DocumentRead]:
-    return [
-        DocumentRead(
-            id=d.id,
-            filename=d.filename,
-            doc_type=d.doc_type.value,
-            is_handout=d.is_handout,
-            source_url=d.source_url,
-            created_at=d.created_at,
-            has_text=bool(d.parsed_text),
-        )
-        for d in exp.documents
-    ]
+    return [literature_service.build_document_read(d, exp.id) for d in exp.documents]
 
 
 def _experiment_or_404(db: Session, experiment_id: str) -> ExperimentDetail:
@@ -66,6 +57,7 @@ def list_experiments(db: Session = Depends(get_db)) -> list[ExperimentListItem]:
             ExperimentListItem(
                 id=exp.id,
                 title=exp.title,
+                discipline=exp.discipline or Discipline.CHEMISTRY,
                 status=exp.status,
                 template_id=exp.template_id,
                 current_step_index=exp.current_step_index,
@@ -86,9 +78,12 @@ def create_experiment(
         template = db.get(ExperimentTemplate, payload.template_id)
         if not template:
             raise HTTPException(status_code=400, detail="数据模板不存在")
+        if template.discipline != payload.discipline:
+            raise HTTPException(status_code=400, detail="数据模板与实验学科不一致")
 
     exp = Experiment(
         title=payload.title.strip(),
+        discipline=payload.discipline,
         template_id=payload.template_id,
         status=ExperimentStatus.DRAFT,
     )
@@ -124,6 +119,9 @@ def update_experiment(
         template = db.get(ExperimentTemplate, data["template_id"])
         if not template:
             raise HTTPException(status_code=400, detail="数据模板不存在")
+        disc = data.get("discipline", exp.discipline)
+        if template.discipline != disc:
+            raise HTTPException(status_code=400, detail="数据模板与实验学科不一致")
     for key, value in data.items():
         setattr(exp, key, value)
     db.commit()

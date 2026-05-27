@@ -1,6 +1,6 @@
 from collections.abc import Generator
 
-from sqlalchemy import create_engine, event
+from sqlalchemy import create_engine, event, inspect, text
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 from app.config import get_settings, resolve_path
@@ -44,6 +44,33 @@ def get_db() -> Generator[Session, None, None]:
         db.close()
 
 
+def _migrate_sqlite_columns() -> None:
+    """为已有 SQLite 数据库补充 discipline 列（MVP 轻量迁移）。"""
+    insp = inspect(engine)
+    if not insp.has_table("experiments"):
+        return
+    with engine.begin() as conn:
+        exp_cols = {row[1] for row in conn.execute(text("PRAGMA table_info(experiments)"))}
+        if "discipline" not in exp_cols:
+            conn.execute(
+                text(
+                    "ALTER TABLE experiments ADD COLUMN discipline "
+                    "VARCHAR(32) NOT NULL DEFAULT 'chemistry'"
+                )
+            )
+        if insp.has_table("experiment_templates"):
+            tpl_cols = {
+                row[1] for row in conn.execute(text("PRAGMA table_info(experiment_templates)"))
+            }
+            if "discipline" not in tpl_cols:
+                conn.execute(
+                    text(
+                        "ALTER TABLE experiment_templates ADD COLUMN discipline "
+                        "VARCHAR(32) NOT NULL DEFAULT 'chemistry'"
+                    )
+                )
+
+
 def init_db() -> None:
     from app.models import experiment, template  # noqa: F401
 
@@ -52,3 +79,4 @@ def init_db() -> None:
     uploads.mkdir(parents=True, exist_ok=True)
     exports.mkdir(parents=True, exist_ok=True)
     Base.metadata.create_all(bind=engine)
+    _migrate_sqlite_columns()

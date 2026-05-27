@@ -11,6 +11,7 @@ from docx.oxml.ns import qn
 from docx.shared import Inches, Pt
 
 from app.config import get_settings, resolve_path
+from app.models.discipline import materials_label
 from app.models.experiment import Experiment, ExperimentStep, FieldType
 
 DEFAULT_FONT = "宋体"
@@ -160,7 +161,8 @@ def export_experiment_to_docx(experiment: Experiment) -> Path:
     _para(doc, experiment.purpose or "（未填写）")
 
     if experiment.reagents_instruments:
-        _heading(doc, "试剂与仪器", level=2)
+        equip_title = materials_label(experiment.discipline)
+        _heading(doc, equip_title, level=2)
         for item in experiment.reagents_instruments:
             _para(doc, f"· {item}")
 

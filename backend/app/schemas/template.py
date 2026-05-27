@@ -3,6 +3,8 @@ from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict
 
+from app.models.discipline import Discipline
+
 
 class TemplateFieldSchema(BaseModel):
     label: str
@@ -15,5 +17,6 @@ class ExperimentTemplateRead(BaseModel):
 
     id: int
     name: str
+    discipline: Discipline
     fields: List[TemplateFieldSchema]
     created_at: datetime

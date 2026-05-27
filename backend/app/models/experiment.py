@@ -20,6 +20,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
+from app.models.discipline import Discipline
 
 if TYPE_CHECKING:
     from app.models.template import ExperimentTemplate
@@ -35,6 +36,7 @@ class DocumentType(str, enum.Enum):
     PDF = "pdf"
     DOCX = "docx"
     URL = "url"
+    IMAGE = "image"
 
 
 class FieldType(str, enum.Enum):
@@ -50,6 +52,11 @@ class Experiment(Base):
         String(36), primary_key=True, default=lambda: str(uuid.uuid4())
     )
     title: Mapped[str] = mapped_column(String(256), nullable=False)
+    discipline: Mapped[Discipline] = mapped_column(
+        Enum(Discipline, values_callable=lambda x: [e.value for e in x]),
+        default=Discipline.CHEMISTRY,
+        nullable=False,
+    )
     status: Mapped[ExperimentStatus] = mapped_column(
         Enum(ExperimentStatus), default=ExperimentStatus.DRAFT, nullable=False
     )

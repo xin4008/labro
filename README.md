@@ -1,6 +1,6 @@
-# 化学实验助手 (Chemistry Lab Assistant)
+# Labro
 
-面向化学专业学生的实验辅助 Web 应用：**文献 AI 解析 → 结构化步骤 → 现场数据记录 → Word 报告导出**。数据默认保存在本机 SQLite，适合个人与实验室小组使用。
+面向化学、物理、生物专业学生的实验辅助 Web 应用：**文献/图片 AI 解析 → 结构化步骤 → 现场数据记录 → Word 报告导出**。支持三大学科模板与专用 AI 提示词，数据默认保存在本机 SQLite，适合个人与实验室小组使用。
 
 ![Phase](https://img.shields.io/badge/MVP-Phase%201--4-blue)
 ![Stack](https://img.shields.io/badge/Frontend-React%20%2B%20Tailwind-61dafb)
@@ -10,7 +10,8 @@
 
 | 模块 | 功能 |
 |------|------|
-| 文献导入 | 上传 PDF / DOCX、添加网址；教师讲义优先 |
+| 学科选择 | 化学 / 物理 / 生物；各自模板与 AI 解析提示词 |
+| 文献导入 | 上传 PDF / DOCX、**实验图片**（OCR + AI 整理）、添加网址；教师讲义优先 |
 | AI 解析 | DeepSeek 提取目的、步骤、预期现象、安全注意 |
 | 实验进行 | 分步引导、数值/文字/图片记录、语音输入、自动保存 |
 | 报告导出 | 一键生成 Word（三线表、宋体排版） |
@@ -63,7 +64,7 @@ ai:
 ## 项目结构
 
 ```
-chemistry-lab-assistant/
+labro/
 ├── frontend/          # React + TypeScript + Tailwind
 ├── backend/           # FastAPI + SQLAlchemy + SQLite
 │   ├── app/

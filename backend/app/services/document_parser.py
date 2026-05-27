@@ -134,3 +134,29 @@ def truncate_text(text: str, max_chars: int = 80000) -> str:
     if len(text) <= max_chars:
         return text
     return text[:max_chars] + "\n\n[文本已截断，仅发送前部分内容供 AI 解析]"
+
+
+def extract_text_from_image(path: Path) -> str:
+    """从实验讲义/黑板/仪器说明等照片中 OCR 提取文字。"""
+    try:
+        from rapidocr_onnxruntime import RapidOCR
+    except ImportError as exc:
+        raise RuntimeError(
+            "图片识别组件未安装。请在 backend 目录执行：pip install -r requirements.txt"
+        ) from exc
+
+    engine = RapidOCR()
+    result, _ = engine(str(path))
+    if not result:
+        return ""
+
+    lines: list[str] = []
+    for item in result:
+        if not item:
+            continue
+        text_part = item[1] if len(item) > 1 else item[0]
+        if isinstance(text_part, str):
+            line = text_part.strip()
+            if line:
+                lines.append(line)
+    return "\n".join(lines)

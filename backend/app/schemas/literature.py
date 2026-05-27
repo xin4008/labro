@@ -14,6 +14,7 @@ class DocumentRead(BaseModel):
     source_url: Optional[str]
     created_at: datetime
     has_text: bool = False
+    preview_url: Optional[str] = None
 
 
 class UrlDocumentCreate(BaseModel):

@@ -11,15 +11,14 @@ interface Props {
 
 export function LiteratureImportPanel({ experimentId, documents, onUpdated }: Props) {
   const fileRef = useRef<HTMLInputElement>(null)
+  const imageRef = useRef<HTMLInputElement>(null)
   const [isHandout, setIsHandout] = useState(false)
   const [url, setUrl] = useState('')
   const [uploading, setUploading] = useState(false)
   const [parsing, setParsing] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const handleFile = async (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+  const uploadFile = async (file: File) => {
     setUploading(true)
     setError(null)
     try {
@@ -29,8 +28,21 @@ export function LiteratureImportPanel({ experimentId, documents, onUpdated }: Pr
       setError(err instanceof Error ? err.message : '上传失败')
     } finally {
       setUploading(false)
-      if (fileRef.current) fileRef.current.value = ''
     }
+  }
+
+  const handleFile = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    await uploadFile(file)
+    if (fileRef.current) fileRef.current.value = ''
+  }
+
+  const handleImage = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    await uploadFile(file)
+    if (imageRef.current) imageRef.current.value = ''
   }
 
   const handleUrl = async () => {
@@ -89,7 +101,10 @@ export function LiteratureImportPanel({ experimentId, documents, onUpdated }: Pr
     <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
       <h4 className="text-sm font-semibold text-slate-800">文献导入</h4>
       <p className="mt-1 text-xs text-slate-500">
-        支持 PDF、DOCX 与部分公开网址。勾选「教师讲义」时优先以讲义为准。
+        支持 PDF、DOCX、实验相关图片（讲义/板书/仪器说明）与部分公开网址。勾选「教师讲义」时优先以讲义为准。
+      </p>
+      <p className="mt-1 text-xs text-slate-500">
+        图片将自动 OCR 识别文字，并在「AI 解析」时由 DeepSeek 整理后生成步骤（请尽量拍摄清晰、平整的画面）。
       </p>
       <p className="mt-1 text-xs text-amber-700">
         知网 / 万方等数据库链接无法直接抓取（需登录），请下载 PDF 后上传。
@@ -113,6 +128,13 @@ export function LiteratureImportPanel({ experimentId, documents, onUpdated }: Pr
           className="hidden"
           onChange={(e) => void handleFile(e)}
         />
+        <input
+          ref={imageRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/gif"
+          className="hidden"
+          onChange={(e) => void handleImage(e)}
+        />
         <button
           type="button"
           disabled={uploading}
@@ -120,6 +142,14 @@ export function LiteratureImportPanel({ experimentId, documents, onUpdated }: Pr
           className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm hover:bg-slate-100 disabled:opacity-50"
         >
           {uploading ? '上传中…' : '上传 PDF / DOCX'}
+        </button>
+        <button
+          type="button"
+          disabled={uploading}
+          onClick={() => imageRef.current?.click()}
+          className="rounded-lg border border-brand-200 bg-brand-50 px-3 py-2 text-sm text-brand-800 hover:bg-brand-100 disabled:opacity-50"
+        >
+          {uploading ? '上传中…' : '上传图片分析'}
         </button>
       </div>
 
@@ -149,13 +179,36 @@ export function LiteratureImportPanel({ experimentId, documents, onUpdated }: Pr
               className="flex items-center justify-between rounded-lg bg-white px-3 py-2 text-sm"
             >
               <div className="min-w-0 flex-1">
-                <span className="font-medium text-slate-800">{doc.filename}</span>
-                {doc.is_handout && (
-                  <span className="ml-2 rounded bg-amber-100 px-1.5 py-0.5 text-xs text-amber-800">
-                    讲义
-                  </span>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-medium text-slate-800">{doc.filename}</span>
+                  {doc.is_handout && (
+                    <span className="rounded bg-amber-100 px-1.5 py-0.5 text-xs text-amber-800">
+                      讲义
+                    </span>
+                  )}
+                  <span className="text-xs text-slate-400 uppercase">{doc.doc_type}</span>
+                  {doc.doc_type === 'image' && (
+                    <span
+                      className={`text-xs ${doc.has_text ? 'text-green-700' : 'text-amber-700'}`}
+                    >
+                      {doc.has_text ? '已识别文字' : '待解析识别'}
+                    </span>
+                  )}
+                </div>
+                {doc.preview_url && (
+                  <a
+                    href={doc.preview_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-2 inline-block"
+                  >
+                    <img
+                      src={doc.preview_url}
+                      alt={doc.filename}
+                      className="max-h-24 rounded border border-slate-200 object-contain"
+                    />
+                  </a>
                 )}
-                <span className="ml-2 text-xs text-slate-400 uppercase">{doc.doc_type}</span>
                 {doc.source_url && (
                   <p className="truncate text-xs text-slate-500">{doc.source_url}</p>
                 )}
@@ -178,7 +231,7 @@ export function LiteratureImportPanel({ experimentId, documents, onUpdated }: Pr
         onClick={() => void handleParse()}
         className="mt-4 w-full rounded-lg bg-brand-600 py-2.5 text-sm font-medium text-white hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:px-6"
       >
-        {parsing ? 'AI 解析中，请稍候…' : 'AI 解析并生成步骤'}
+        {parsing ? 'AI 解析中（含图片识别），请稍候…' : 'AI 解析并生成步骤'}
       </button>
 
       {error && (

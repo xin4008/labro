@@ -6,7 +6,13 @@ import httpx
 
 from app.ai.base import AIProvider
 from app.ai.http_client import build_http_client, friendly_connect_error
-from app.ai.prompts import LITERATURE_PARSE_SYSTEM, build_literature_user_prompt
+from app.ai.prompts import (
+    build_image_ocr_refine_user_prompt,
+    build_literature_user_prompt,
+    get_image_ocr_refine_system,
+    get_literature_parse_system,
+)
+from app.models.discipline import Discipline
 from app.config import AISettings
 from app.services.document_parser import truncate_text
 
@@ -52,13 +58,27 @@ class DeepSeekProvider(AIProvider):
             raise RuntimeError("DeepSeek 返回格式异常") from exc
 
     async def parse_literature(
-        self, text: str, handout_text: Optional[str] = None
+        self,
+        text: str,
+        handout_text: Optional[str] = None,
+        discipline: Discipline = Discipline.CHEMISTRY,
     ) -> Dict[str, Any]:
         literature = truncate_text(text)
         handout = truncate_text(handout_text) if handout_text else None
-        user_prompt = build_literature_user_prompt(literature, handout)
-        raw = await self.complete(LITERATURE_PARSE_SYSTEM, user_prompt)
+        system_prompt = get_literature_parse_system(discipline)
+        user_prompt = build_literature_user_prompt(literature, handout, discipline)
+        raw = await self.complete(system_prompt, user_prompt)
         return _parse_json_response(raw)
+
+    async def refine_image_ocr_text(
+        self,
+        ocr_text: str,
+        discipline: Discipline = Discipline.CHEMISTRY,
+        filename: str = "image",
+    ) -> str:
+        system_prompt = get_image_ocr_refine_system(discipline)
+        user_prompt = build_image_ocr_refine_user_prompt(ocr_text, filename)
+        return (await self.complete(system_prompt, user_prompt)).strip()
 
 
 def _extract_api_error(response: httpx.Response) -> str:

@@ -5,6 +5,7 @@ import { api } from '@/api/client'
 import { LiteratureImportPanel } from '@/components/literature/LiteratureImportPanel'
 import type { AppOutletContext } from '@/components/layout/AppLayout'
 import { StepWorkbench } from '@/components/steps/StepWorkbench'
+import { DISCIPLINE_LABEL, MATERIALS_LABEL } from '@/constants/discipline'
 import type { ExperimentDetail } from '@/types'
 
 export function ExperimentPage() {
@@ -87,7 +88,12 @@ export function ExperimentPage() {
             <p className="text-xs font-medium uppercase tracking-wide text-brand-600">
               实验工作台
             </p>
-            <h3 className="mt-1 text-lg font-semibold text-slate-900">{experiment.title}</h3>
+            <h3 className="mt-1 text-lg font-semibold text-slate-900">
+              {experiment.title}
+              <span className="ml-2 rounded bg-brand-100 px-2 py-0.5 text-xs font-medium text-brand-700">
+                {DISCIPLINE_LABEL[experiment.discipline]}
+              </span>
+            </h3>
           </div>
           <button
             type="button"
@@ -102,6 +108,19 @@ export function ExperimentPage() {
           <div className="mt-4">
             <h4 className="text-sm font-medium text-slate-800">实验目的</h4>
             <p className="mt-1 text-sm leading-relaxed text-slate-600">{experiment.purpose}</p>
+          </div>
+        )}
+
+        {experiment.reagents_instruments && experiment.reagents_instruments.length > 0 && (
+          <div className="mt-4">
+            <h4 className="text-sm font-medium text-slate-800">
+              {MATERIALS_LABEL[experiment.discipline]}
+            </h4>
+            <ul className="mt-1 list-inside list-disc text-sm text-slate-600">
+              {experiment.reagents_instruments.map((item, i) => (
+                <li key={i}>{item}</li>
+              ))}
+            </ul>
           </div>
         )}
 

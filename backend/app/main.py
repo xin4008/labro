@@ -20,7 +20,7 @@ WELCOME_HTML = """
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>化学实验助手 - 后端 API</title>
+  <title>Labro - 后端 API</title>
   <style>
     body { font-family: "Segoe UI", system-ui, sans-serif; max-width: 640px; margin: 48px auto; padding: 0 20px; color: #1e293b; line-height: 1.6; }
     h1 { color: #2563eb; font-size: 1.5rem; }
@@ -31,7 +31,7 @@ WELCOME_HTML = """
   </style>
 </head>
 <body>
-  <h1>化学实验助手 · 后端 API 已运行</h1>
+  <h1>Labro · 后端 API 已运行</h1>
   <p class="warn">⚠ 这里是<strong>接口服务</strong>，不是应用界面。白屏 + prettyprint 说明您打开了 JSON 接口页。</p>
   <div class="box">
     <p><strong>请用浏览器打开前端页面：</strong></p>
@@ -56,8 +56,8 @@ async def lifespan(_app: FastAPI):
 def create_app() -> FastAPI:
     settings = get_settings()
     app = FastAPI(
-        title="化学实验助手 API",
-        description="Chemistry Lab Assistant — MVP Backend",
+        title="Labro API",
+        description="Labro — Lab experiment assistant (React + FastAPI)",
         version="0.1.0",
         lifespan=lifespan,
     )
@@ -74,6 +74,18 @@ def create_app() -> FastAPI:
         settings = get_settings()
         base = resolve_path(settings.storage.uploads_dir)
         path = base / experiment_id / "steps" / str(step_id) / Path(filename).name
+        if not path.exists() or not path.is_file():
+            raise HTTPException(status_code=404, detail="文件不存在")
+        return FileResponse(path)
+
+    @app.get(
+        "/api/files/{experiment_id}/documents/{filename}",
+        include_in_schema=False,
+    )
+    def serve_document_image(experiment_id: str, filename: str):
+        settings = get_settings()
+        base = resolve_path(settings.storage.uploads_dir)
+        path = base / experiment_id / Path(filename).name
         if not path.exists() or not path.is_file():
             raise HTTPException(status_code=404, detail="文件不存在")
         return FileResponse(path)
